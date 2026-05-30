@@ -1,0 +1,360 @@
+```html
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Walimatul Urus Aina & Danish</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        wedding: {
+                            gold: '#D4AF37',
+                            'gold-light': '#F3E5AB',
+                            pink: '#FFF0F5',
+                            rose: '#E6C5C5',
+                            dark: '#2C1B1B',
+                            burgundy: '#5C2D2D'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        cursive: ['Great Vibes', 'cursive']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        .bg-pattern {
+            background-image: radial-gradient(#E6C5C5 0.5px, transparent 0.5px), radial-gradient(#E6C5C5 0.5px, #FFF0F5 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            opacity: 0.3;
+        }
+        .floral-border {
+            border-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M10,10 C20,20 40,0 50,10 C60,20 80,0 90,10 C100,20 100,40 90,50 C80,60 100,80 90,90 C80,100 60,80 50,90 C40,100 20,80 10,90 C0,80 0,60 10,50 C20,40 0,20 10,10 Z" fill="none" stroke="%23D4AF37" stroke-width="2"/></svg>') 30 stretch;
+        }
+        @keyframes pulse-slow {
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.03); opacity: 1; }
+        }
+        .pulse-element {
+            animation: pulse-slow 4s infinite ease-in-out;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FFF0F5;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #E6C5C5;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #D4AF37;
+        }
+    </style>
+</head>
+<body class="bg-wedding-pink text-wedding-dark font-sans relative overflow-x-hidden">
+
+    <!-- Canvas for Floating Flower Petals -->
+    <canvas id="petal-canvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-50"></canvas>
+
+    <!-- Music Player Controls Floating -->
+    <div class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 items-center">
+        <button id="music-btn" class="bg-white/80 backdrop-blur-md text-wedding-burgundy p-4 rounded-full shadow-lg border border-wedding-rose hover:bg-wedding-gold hover:text-white transition-all duration-300 focus:outline-none pulse-element">
+            <i id="music-icon" class="fas fa-music"></i>
+        </button>
+        <span class="text-[10px] bg-wedding-burgundy/90 text-white px-2 py-0.5 rounded shadow text-center hidden md:inline">Muzik Latar</span>
+    </div>
+    
+    <!-- Hidden Audio Element (Royalty Free Soft Instrumental Wedding Music) -->
+    <audio id="bg-music" loop preload="auto">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" type="audio/mp3">
+    </audio>
+
+    <!-- TOP MUSIC NOTIFICATION BANNER -->
+    <div id="welcome-overlay" class="fixed inset-0 bg-wedding-dark/95 z-[9999] flex flex-col items-center justify-center text-center p-6 transition-all duration-1000">
+        <div class="max-w-md bg-wedding-pink p-8 rounded-3xl border-2 border-wedding-gold shadow-2xl relative">
+            <div class="absolute -top-12 left-1/2 -translate-x-1/2 bg-wedding-pink border-2 border-wedding-gold rounded-full p-4 w-24 h-24 flex items-center justify-center text-3xl">
+                🌸
+            </div>
+            <p class="font-serif text-xs uppercase tracking-widest text-wedding-gold mt-8 mb-2">Walimatul Urus</p>
+            <h1 class="font-cursive text-5xl text-wedding-burgundy mb-4">Aina & Danish</h1>
+            <p class="text-sm text-wedding-dark/80 mb-6 italic">Dengan penuh kesyukuran, kami menjemput anda ke majlis perkahwinan kami.</p>
+            
+            <button onclick="startInvitation()" class="bg-wedding-burgundy hover:bg-wedding-gold text-white font-medium px-8 py-3 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-2">
+                <i class="fas fa-envelope-open-text"></i> Buka Undangan
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN BODY CONTAINER -->
+    <div id="main-content" class="opacity-30 blur-sm transition-all duration-1000 max-w-lg mx-auto bg-white min-h-screen shadow-2xl relative border-x border-wedding-rose/50">
+        
+        <!-- HERO SECTION -->
+        <section class="relative min-h-[90vh] flex flex-col justify-between items-center text-center p-6 bg-gradient-to-b from-wedding-pink to-white overflow-hidden">
+            <!-- Decorative SVG Frame corners -->
+            <div class="absolute top-4 left-4 w-16 h-16 border-t-2 border-l-2 border-wedding-gold opacity-60"></div>
+            <div class="absolute top-4 right-4 w-16 h-16 border-t-2 border-r-2 border-wedding-gold opacity-60"></div>
+            <div class="absolute bottom-4 left-4 w-16 h-16 border-b-2 border-l-2 border-wedding-gold opacity-60"></div>
+            <div class="absolute bottom-4 right-4 w-16 h-16 border-b-2 border-r-2 border-wedding-gold opacity-60"></div>
+            
+            <div class="my-auto py-10 z-10">
+                <div class="text-wedding-gold text-2xl mb-4">🌸</div>
+                <p class="font-serif uppercase tracking-[0.25em] text-xs text-wedding-burgundy/80 mb-2">Walimatul Urus</p>
+                <p class="text-xs text-gray-500 max-w-[280px] mx-auto leading-relaxed mb-6">UNDANGAN MAJLIS PERKAHWINAN</p>
+                
+                <h1 class="font-cursive text-6xl text-wedding-burgundy my-4 leading-normal">Aina Sofea</h1>
+                <div class="font-serif text-wedding-gold text-xl italic my-2">&</div>
+                <h1 class="font-cursive text-6xl text-wedding-burgundy my-4 leading-normal">Muhammad Danish</h1>
+                
+                <div class="w-12 h-0.5 bg-wedding-gold mx-auto my-6"></div>
+                
+                <!-- Countdown -->
+                <div id="countdown-container" class="mt-8 px-4 py-3 bg-wedding-pink/60 backdrop-blur-sm rounded-2xl border border-wedding-rose/40 max-w-xs mx-auto">
+                    <p class="text-[10px] uppercase tracking-widest text-wedding-burgundy font-semibold mb-2">Menanti Hari Bahagia</p>
+                    <div class="grid grid-cols-4 gap-2 text-center">
+                        <div class="p-1">
+                            <span id="days" class="block font-serif text-xl font-bold text-wedding-burgundy">00</span>
+                            <span class="text-[9px] text-gray-500 uppercase">Hari</span>
+                        </div>
+                        <div class="p-1">
+                            <span id="hours" class="block font-serif text-xl font-bold text-wedding-burgundy">00</span>
+                            <span class="text-[9px] text-gray-500 uppercase">Jam</span>
+                        </div>
+                        <div class="p-1">
+                            <span id="minutes" class="block font-serif text-xl font-bold text-wedding-burgundy">00</span>
+                            <span class="text-[9px] text-gray-500 uppercase">Min</span>
+                        </div>
+                        <div class="p-1">
+                            <span id="seconds" class="block font-serif text-xl font-bold text-wedding-burgundy">00</span>
+                            <span class="text-[9px] text-gray-500 uppercase">Saat</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scroll Indicator -->
+            <div class="z-10 animate-bounce text-wedding-burgundy mt-auto pb-4">
+                <a href="#kandungan-kad" class="flex flex-col items-center gap-1 text-xs uppercase tracking-wider text-wedding-burgundy/75">
+                    <span>Sila Skrol Ke Bawah</span>
+                    <i class="fas fa-chevron-down"></i>
+                </a>
+            </div>
+        </section>
+
+        <!-- MAIN CARD DETAILS -->
+        <section id="kandungan-kad" class="relative px-6 py-12 bg-white text-center border-t border-wedding-pink">
+            <div class="max-w-md mx-auto">
+                <div class="text-wedding-gold text-xl mb-4"><i class="fas fa-heart"></i></div>
+                
+                <p class="font-serif italic text-wedding-burgundy text-lg mb-4">Dengan penuh kesyukuran, kami menjemput</p>
+                
+                <div class="border-y border-wedding-gold/30 py-4 my-6">
+                    <h2 class="font-serif text-lg font-semibold text-wedding-dark tracking-wider px-4">
+                        Dato’ / Datin / Tuan / Puan / Encik / Cik
+                    </h2>
+                </div>
+                
+                <p class="text-sm leading-relaxed text-gray-600 mb-8 px-4">
+                    ke majlis perkahwinan putera-puteri kami yang dikasihi untuk berkongsi kebahagiaan dan menyatukan dua jiwa yang serasi.
+                </p>
+
+                <!-- Bride & Groom Detailed Section -->
+                <div class="bg-wedding-pink/30 rounded-3xl p-6 border border-wedding-rose/30 mb-10 shadow-sm">
+                    <div class="mb-4">
+                        <p class="font-serif text-xs uppercase tracking-widest text-wedding-gold font-bold">Puteri Kami</p>
+                        <h3 class="font-cursive text-4xl text-wedding-burgundy mt-1">Aina Sofea binti Mohd Azman</h3>
+                    </div>
+                    <div class="text-wedding-gold font-serif text-lg italic my-2">dengan</div>
+                    <div>
+                        <p class="font-serif text-xs uppercase tracking-widest text-wedding-gold font-bold">Putera Kami</p>
+                        <h3 class="font-cursive text-4xl text-wedding-burgundy mt-1">Muhammad Danish bin Rahman</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DATE & TIME SECTION -->
+        <section class="relative px-6 py-12 bg-wedding-pink/40 text-center">
+            <div class="absolute inset-0 bg-pattern"></div>
+            <div class="relative z-10 max-w-md mx-auto">
+                <h3 class="font-serif text-2xl text-wedding-burgundy font-bold mb-8">Tarikh & Masa</h3>
+                
+                <!-- Date Box -->
+                <div class="bg-white rounded-2xl shadow-md p-6 border border-wedding-rose mb-6 max-w-xs mx-auto">
+                    <div class="text-wedding-gold text-4xl mb-2"><i class="far fa-calendar-alt"></i></div>
+                    <h4 class="font-serif text-lg font-bold text-wedding-burgundy">Sabtu</h4>
+                    <p class="font-serif text-3xl font-extrabold text-wedding-dark my-1">12 Dis</p>
+                    <p class="font-serif text-sm text-gray-500">Disember 2026</p>
+                </div>
+
+                <!-- Time Details -->
+                <div class="bg-white rounded-2xl shadow-md p-6 border border-wedding-rose mb-6 max-w-xs mx-auto">
+                    <div class="text-wedding-gold text-4xl mb-2"><i class="far fa-clock"></i></div>
+                    <p class="font-serif text-sm uppercase tracking-wider text-gray-500">Masa Majlis</p>
+                    <p class="font-bold text-wedding-burgundy text-lg mt-1">11:00 pagi – 4:00 petang</p>
+                </div>
+
+                <!-- Add to Calendar Button -->
+                <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Walimatul+Urus+Aina+%26+Danish&dates=20261212T030000Z/20261212T080000Z&details=Majlis+Perkahwinan+Aina+Sofea+%26+Muhammad+Danish&location=Dewan+Seri+Melati%2C+Kajang%2C+Selangor" 
+                   target="_blank" 
+                   class="inline-flex items-center gap-2 bg-wedding-gold hover:bg-wedding-burgundy text-white text-xs font-semibold uppercase tracking-wider px-6 py-3 rounded-full shadow transition-all duration-300 transform hover:scale-105">
+                    <i class="far fa-calendar-check"></i> Simpan Tarikh (Google Calendar)
+                </a>
+            </div>
+        </section>
+
+        <!-- VENUE SECTION -->
+        <section class="relative px-6 py-12 bg-white text-center">
+            <div class="max-w-md mx-auto">
+                <div class="text-wedding-gold text-4xl mb-4"><i class="fas fa-map-marked-alt"></i></div>
+                <h3 class="font-serif text-2xl text-wedding-burgundy font-bold mb-4">Tempat Majlis</h3>
+                
+                <div class="px-4">
+                    <h4 class="font-serif text-xl font-bold text-wedding-dark mb-2">Dewan Seri Melati</h4>
+                    <p class="text-sm text-gray-600 leading-relaxed mb-8">
+                        No. 18, Jalan Mawar Indah,<br>
+                        43000 Kajang, Selangor
+                    </p>
+
+                    <!-- Navigation Buttons -->
+                    <div class="grid grid-cols-2 gap-4 max-w-xs mx-auto">
+                        <a href="https://maps.google.com/?q=Dewan+Seri+Melati+Kajang" target="_blank" class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-3 px-4 rounded-xl shadow transition duration-300">
+                            <i class="fab fa-google"></i> Google Maps
+                        </a>
+                        <a href="https://waze.com/ul?q=Dewan+Seri+Melati+Kajang" target="_blank" class="flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold py-3 px-4 rounded-xl shadow transition duration-300">
+                            <i class="fab fa-waze"></i> Waze
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ITINERARY / TIMELINE SECTION -->
+        <section class="relative px-6 py-12 bg-wedding-pink/30 text-center">
+            <div class="max-w-md mx-auto">
+                <div class="text-wedding-gold text-4xl mb-4"><i class="fas fa-list-ul"></i></div>
+                <h3 class="font-serif text-2xl text-wedding-burgundy font-bold mb-8">Atur Cara Majlis</h3>
+
+                <!-- Timeline UI -->
+                <div class="relative border-l-2 border-wedding-gold/30 mx-auto max-w-xs text-left pl-6 py-2">
+                    <!-- Event 1 -->
+                    <div class="mb-8 relative">
+                        <span class="absolute -left-[31px] top-1 bg-wedding-burgundy text-white w-4 h-4 rounded-full border-4 border-white"></span>
+                        <p class="text-xs font-bold text-wedding-gold uppercase tracking-wider">11:00 Pagi</p>
+                        <h4 class="font-serif text-md font-bold text-wedding-dark">Ketibaan Tetamu</h4>
+                        <p class="text-xs text-gray-500 mt-1">Sajian makan beradab bermula untuk para hadirin.</p>
+                    </div>
+
+                    <!-- Event 2 -->
+                    <div class="mb-8 relative">
+                        <span class="absolute -left-[31px] top-1 bg-wedding-burgundy text-white w-4 h-4 rounded-full border-4 border-white"></span>
+                        <p class="text-xs font-bold text-wedding-gold uppercase tracking-wider">12:30 Tengah Hari</p>
+                        <h4 class="font-serif text-md font-bold text-wedding-dark">Ketibaan Pengantin</h4>
+                        <p class="text-xs text-gray-500 mt-1">Upacara berarak masuk pengantin berserta acara bersanding dan menepung tawar.</p>
+                    </div>
+
+                    <!-- Event 3 -->
+                    <div class="relative">
+                        <span class="absolute -left-[31px] top-1 bg-wedding-burgundy text-white w-4 h-4 rounded-full border-4 border-white"></span>
+                        <p class="text-xs font-bold text-wedding-gold uppercase tracking-wider">4:00 Petang</p>
+                        <h4 class="font-serif text-md font-bold text-wedding-dark">Majlis Tamat</h4>
+                        <p class="text-xs text-gray-500 mt-1">Sesi fotografi penutup dan ucapan penghargaan.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+// CARI KOD RSVP DI BAHAGIAN BAWAH FAIL ANDA, DAN GANTIKAN DENGAN INI:
+
+const rsvpForm = document.getElementById('rsvp-form');
+const rsvpModal = document.getElementById('rsvp-modal');
+
+rsvpForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const name = document.getElementById('rsvp-name').value;
+    const attendance = document.querySelector('input[name="attendance"]:checked').value;
+    const pax = document.getElementById('rsvp-pax').value;
+    const wish = document.getElementById('rsvp-wish').value;
+
+    // AMARAN: Gantikan pautan di bawah ini dengan pautan API SheetDB anda!
+    const sheetDB_URL = 'https://sheetdb.io/api/v1/4dhkcr850doby'; 
+
+    // Proses menghantar data ke Google Sheets
+    fetch(sheetDB_URL, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            data: [
+                {
+                    'name': name,
+                    'attendance': attendance,
+                    'pax': attendance === 'Hadir' ? pax : 0,
+                    'wish': wish
+                }
+            ]
+        })
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        // Paparkan kotak berjaya
+        const modalMsg = document.getElementById('modal-msg');
+        if (attendance === 'Hadir') {
+            modalMsg.innerText = `Terima kasih ${name}! Pengesahan kehadiran sebanyak (${pax} Pax) telah direkodkan.`;
+        } else {
+            modalMsg.innerText = `Terima kasih atas maklum balas anda, ${name}. Kami menghargai doa anda.`;
+        }
+        rsvpModal.style.display = 'flex';
+        rsvpForm.reset();
+    })
+    .catch((error) => {
+        console.error('Ralat:', error);
+        alert('Maaf, sistem sibuk. Sila cuba lagi.');
+    });
+});
+
+
+                    <!-- Attendance Radio -->
+                    <div class="mb-4">
+                        <span class="block text-xs font-bold uppercase tracking-wider text-wedding-burgundy mb-2">Pengesahan Kehadiran</span>
+                        <div class="flex gap-4">
+                            <label class="flex items-center gap-2 cursor-pointer bg-white px-4 py-3 rounded-xl border border-wedding-rose/40 flex-1 justify-center">
+                                <input type="radio" name="attendance" value="Hadir" checked class="text-wedding-gold focus:ring-wedding-gold">
+                                <span class="text-xs font-bold text-wedding-dark">Hadir</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer bg-white px-4 py-3 rounded-xl border border-wedding-rose/40 flex-1 justify-center">
+                                <input type="radio" name="attendance" value="Tidak Hadir" class="text-wedding-gold focus:ring-wedding-gold">
+                                <span class="text-xs font-bold text-wedding-dark">Tidak Hadir</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Pax Dropdown -->
+                    <div id="pax-container" class="mb-4">
+                        <label for="rsvp-pax" class="block text-xs font-bold uppercase tracking-wider text-wedding-burgundy mb-2">Bilangan Kehadiran (Pax)</label>
+                        <select id="rsvp-pax" class="w-full px-4 py-3 rounded-xl border border-wedding-rose/60 focus:ring-2 focus:ring-wedding-gold focus:outline-none bg-white text-sm">
+                          
